@@ -20,6 +20,7 @@ def solve_for_member(guest, guest_list, preferences):
     while current_guest < len(current_table):
         current_guest_prefs = preferences[current_table[current_guest]]
         for (other_guest, pref) in current_guest_prefs.items():
+            # Membership test required to prevent infinite loop
             if pref == _PAIR and other_guest not in current_table:
                 remaining_guests = [g for g in remaining_guests if g != other_guest]
                 current_table.append(other_guest)
@@ -42,13 +43,14 @@ def can_merge_tables(table1, table2, preferences):
 
 def merge_max_solution(tables, preferences):
     merged_tables = []
-    seen = {}
+    seen = {} # Keep track of all tables that have already been merged
     for i in range(len(tables)):
-        if i in seen:
+        if i in seen: # Already merged with previous table, skip
             continue
-        seen[i] = True
+        seen[i] = True # mark current table
         table = tables[i]
         for j in range(i+1, len(tables)):
+            # If the current table has not already been merged, attempt merging it and mark it as seen
             if (j not in seen) and (can_merge_tables(table, tables[j], preferences)):
                 table = table + tables[j]
                 seen[j] = True
